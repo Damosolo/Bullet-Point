@@ -10,13 +10,10 @@ public class PlayerController : MonoBehaviour
     public float slideSpeed = 8;
     public float slideDuration = 1;
     public float gravity = 9.81f; // Gravity force, pulling down
-    public float headBobFrequency = 1.5f;
-    public float headBobSwayAngle = 5f;
-    public float headBobHeight = 3f;
-    public float headBobSideMovement = 5f;
     public float lookSpeed = 2f;
     public float lookSensitivity = 1f;
     public float slideCameraHeight = 0.5f;  // adjust this as per your requirement
+    public int maxJumpCount = 2; // Maximum number of times the player can jump
 
     private CharacterController controller;
     private Vector3 velocity;
@@ -46,25 +43,30 @@ public class PlayerController : MonoBehaviour
 
         Vector3 input = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
         Vector3 direction = transform.TransformDirection(input).normalized;
-        velocity = direction * speed;
-        velocity.y -= gravity * Time.deltaTime; // Changed += to -= for gravity
+        Vector3 horizontalMovement = direction * speed;
+        Vector3 verticalMovement = Vector3.up * velocity.y;
 
+        // Jumping logic
         if (controller.isGrounded)
         {
-            velocity.y = 0;
             jumps = 0;
-
-            if (Input.GetButtonDown("Jump") && !isSliding)
+            if (Input.GetButtonDown("Jump"))
             {
-                velocity.y = Mathf.Sqrt(2 * jumpHeight * gravity); // Changed -gravity to gravity
                 jumps++;
+                velocity.y = Mathf.Sqrt(2 * jumpHeight * gravity);
             }
         }
-        else if (Input.GetButtonDown("Jump") && jumps < 2)
+        else
         {
-            velocity.y = Mathf.Sqrt(2 * jumpHeight * gravity); // Changed -gravity to gravity
-            jumps++;
+            if (Input.GetButtonDown("Jump") && jumps < maxJumpCount)
+            {
+                jumps++;
+                velocity.y = Mathf.Sqrt(2 * jumpHeight * gravity);
+            }
         }
+
+        // Apply gravity
+        velocity.y -= gravity * Time.deltaTime;
 
         if (Input.GetButtonDown("Slide") && !isSliding)
         {
@@ -85,22 +87,12 @@ public class PlayerController : MonoBehaviour
             }
             else
             {
-                velocity = direction * slideSpeed;
+                horizontalMovement = direction * slideSpeed;
             }
         }
 
-        controller.Move(velocity * Time.deltaTime);
-
-        // Head bobbing
-        if (velocity.magnitude > 0 && controller.isGrounded && !isSliding) // Disable head bobbing when sliding
-        {
-            playerCamera.transform.localPosition += new Vector3(Mathf.Cos(Time.time * headBobFrequency) * headBobSideMovement, Mathf.Abs(Mathf.Sin(Time.time * headBobFrequency)) * headBobHeight, 0);
-            playerCamera.transform.localRotation = Quaternion.Euler(playerCamera.transform.localPosition.y * headBobSwayAngle, playerCamera.transform.localPosition.x * headBobSwayAngle, 0);
-        }
-        else
-        {
-            playerCamera.transform.localRotation = Quaternion.Euler(0, 0, 0);
-        }
+        // Apply movements
+        controller.Move((horizontalMovement + verticalMovement) * Time.deltaTime);
 
         // Look around
         float lookHorizontal = Input.GetAxis("LookHorizontal") * lookSensitivity;
