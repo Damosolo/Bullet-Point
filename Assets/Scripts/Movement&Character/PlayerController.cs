@@ -15,6 +15,7 @@ public class PlayerController : MonoBehaviour
     public float slideCameraHeight = 0.5f;  // adjust this as per your requirement
     public int maxJumpCount = 2; // Maximum number of times the player can jump
 
+
     private CharacterController controller;
     private Vector3 velocity;
     private bool isSliding = false;
