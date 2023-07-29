@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
@@ -9,12 +10,12 @@ public class PlayerController : MonoBehaviour
     public float jumpHeight = 2;
     public float slideSpeed = 8;
     public float slideDuration = 1;
-    public float gravity = 9.81f; // Gravity force, pulling down
+    public float gravity = 9.81f; 
     public float lookSpeed = 2f;
     public float lookSensitivity = 1f;
-    public float slideCameraHeight = 0.5f;  // adjust this as per your requirement
-    public int maxJumpCount = 2; // Maximum number of times the player can jump
-
+    public float slideCameraHeight = 0.5f;  
+    public int maxJumpCount = 2; 
+    public int playerIndex = 0;
 
     private CharacterController controller;
     private Vector3 velocity;
@@ -25,6 +26,8 @@ public class PlayerController : MonoBehaviour
     private Vector3 originalCameraPosition;
     private Camera playerCamera;
     private float xRotation = 0f;
+    private Gamepad gamepad;
+    private Health playerHealth;
 
     private void Start()
     {
@@ -32,26 +35,33 @@ public class PlayerController : MonoBehaviour
         playerCamera = GetComponentInChildren<Camera>();
         baseHeight = controller.height;
         originalCameraPosition = playerCamera.transform.localPosition;
+        playerHealth = GetComponent<Health>();
     }
 
     private void Update()
     {
+        if (Gamepad.all.Count <= playerIndex) 
+            return;
+
+        gamepad = Gamepad.all[playerIndex];
+
         float speed = walkSpeed;
-        if (Input.GetButton("Sprint"))
+        if (gamepad.leftStickButton.isPressed)
         {
             speed = sprintSpeed;
         }
 
-        Vector3 input = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
+        Vector2 stickInput = gamepad.leftStick.ReadValue();
+        Vector3 input = new Vector3(stickInput.x, 0, stickInput.y);
         Vector3 direction = transform.TransformDirection(input).normalized;
         Vector3 horizontalMovement = direction * speed;
         Vector3 verticalMovement = Vector3.up * velocity.y;
 
-        // Jumping logic
+   
         if (controller.isGrounded)
         {
             jumps = 0;
-            if (Input.GetButtonDown("Jump"))
+            if (gamepad.buttonSouth.wasPressedThisFrame)
             {
                 jumps++;
                 velocity.y = Mathf.Sqrt(2 * jumpHeight * gravity);
@@ -59,17 +69,17 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            if (Input.GetButtonDown("Jump") && jumps < maxJumpCount)
+            if (gamepad.buttonSouth.wasPressedThisFrame && jumps < maxJumpCount)
             {
                 jumps++;
                 velocity.y = Mathf.Sqrt(2 * jumpHeight * gravity);
             }
         }
 
-        // Apply gravity
+      
         velocity.y -= gravity * Time.deltaTime;
 
-        if (Input.GetButtonDown("Slide") && !isSliding)
+        if (gamepad.buttonEast.wasPressedThisFrame && !isSliding)
         {
             isSliding = true;
             slideTimer = 0;
@@ -92,20 +102,31 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        // Apply movements
+       
         controller.Move((horizontalMovement + verticalMovement) * Time.deltaTime);
 
-        // Look around
-        float lookHorizontal = Input.GetAxis("LookHorizontal") * lookSensitivity;
-        float lookVertical = Input.GetAxis("LookVertical") * lookSensitivity;
+       
+        Vector2 lookInput = gamepad.rightStick.ReadValue();
 
-        if (Mathf.Abs(lookHorizontal) < 0.1f) lookHorizontal = 0;
-        if (Mathf.Abs(lookVertical) < 0.1f) lookVertical = 0;
-
-        xRotation -= lookVertical * lookSpeed;
+        xRotation -= lookInput.y * lookSpeed * lookSensitivity;
         xRotation = Mathf.Clamp(xRotation, -90f, 90f);
 
         playerCamera.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
-        transform.Rotate(Vector3.up * lookHorizontal * lookSpeed);
+        transform.Rotate(Vector3.up * lookInput.x * lookSpeed * lookSensitivity);
+    }
+
+    public void Die()
+    {
+        
+        Vector3 respawnPoint = RespawnManager.Instance.GetRandomRespawnPoint();
+        transform.position = respawnPoint;
+
+        
+        playerHealth.SetHealth(100);
+    }
+
+    public Gamepad GetGamepad()
+    {
+        return gamepad;
     }
 }

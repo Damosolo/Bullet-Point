@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class WeaponSway : MonoBehaviour
 {
@@ -14,9 +15,9 @@ public class WeaponSway : MonoBehaviour
     private void Update()
     {
         // get controller input
-        float controllerX = Input.GetAxis("LookHorizontal") * sensitivityMultiplier;
-        float controllerY = Input.GetAxis("LookVertical") * sensitivityMultiplier;
-
+        Vector2 stickInput = Gamepad.current.rightStick.ReadValue();
+        float controllerX = stickInput.x * sensitivityMultiplier;
+        float controllerY = stickInput.y * sensitivityMultiplier;
 
         Quaternion rotationX = Quaternion.AngleAxis(-controllerY, Vector3.right);
         Quaternion rotationY = Quaternion.AngleAxis(controllerX, Vector3.up);
