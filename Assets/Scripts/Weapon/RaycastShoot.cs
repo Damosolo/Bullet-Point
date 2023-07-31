@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections;
 
+
 public class RaycastShoot : MonoBehaviour
 {
     public Camera fpsCamera; 
@@ -82,24 +83,31 @@ public class RaycastShoot : MonoBehaviour
     {
         isAiming = true;
         float startTime = Time.time;
-        while (Time.time < startTime + adsTransitionTime)
+        float lerpFactor = 0;
+        while (Time.time < startTime + adsTransitionTime || lerpFactor < 1)
         {
-            float lerpFactor = (Time.time - startTime) / adsTransitionTime;
+            
+            lerpFactor = (Time.time - startTime) / adsTransitionTime;
+            UnityEngine.Debug.Log(lerpFactor);
             transform.localPosition = Vector3.Lerp(originalPosition, adsPositionTransform.localPosition, lerpFactor);
             yield return null;
         }
+     
     }
 
     IEnumerator StopAimingDownSights()
     {
         isAiming = false;
         float startTime = Time.time;
-        while (Time.time < startTime + adsTransitionTime)
+        float lerpFactor = 0;
+        while (Time.time < startTime + adsTransitionTime || lerpFactor < 1)
         {
-            float lerpFactor = (Time.time - startTime) / adsTransitionTime;
+            lerpFactor = (Time.time - startTime) / adsTransitionTime;
             transform.localPosition = Vector3.Lerp(adsPositionTransform.localPosition, originalPosition, lerpFactor);
             yield return null;
         }
+
+
     }
 
     void StopVibration()
