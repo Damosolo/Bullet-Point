@@ -14,10 +14,11 @@ public class Health : MonoBehaviour
     public void TakeDamage(float amount)
     {
         currentHealth -= amount; // Decrease the current health by the damage amount
-
+        Debug.Log(currentHealth);
         // If the current health is less than or equal to zero
         if (currentHealth <= 0)
         {
+            Debug.Log("no health");
             // Call the Die method
             GetComponent<PlayerController>().Die();
         }

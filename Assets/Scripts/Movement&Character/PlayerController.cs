@@ -119,9 +119,11 @@ public class PlayerController : MonoBehaviour
     {
         
         Vector3 respawnPoint = RespawnManager.Instance.GetRandomRespawnPoint();
+        controller.enabled = false;
         transform.position = respawnPoint;
+        controller.enabled = true;
+        Debug.Log(respawnPoint);
 
-        
         playerHealth.SetHealth(100);
     }
 

@@ -4,5 +4,8 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/SkyLine.unity
+    guid: d097c2ef2ee112b41b1c9583132f6850
   m_configObjects: {}

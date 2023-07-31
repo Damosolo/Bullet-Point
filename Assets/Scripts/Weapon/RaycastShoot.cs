@@ -59,6 +59,7 @@ public class RaycastShoot : MonoBehaviour
                 Health health = hit.transform.GetComponent<Health>();
                 if (health != null)
                 {
+                    Debug.Log("Damage Done");
                     health.TakeDamage(damage);
                 }
             }
