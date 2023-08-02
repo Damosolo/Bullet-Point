@@ -6,16 +6,24 @@ public class WeaponSway : MonoBehaviour
     [Header("Sway Settings")]
     [SerializeField] private float speed;
     [SerializeField] private float sensitivityMultiplier;
+    private Gamepad gamepad;
 
-    private Quaternion refRotation;
-
-    private float xRotation;
-    private float yRotation;
+    private void Start()
+    {
+        // Get the main gamepad connected to the player's input
+        gamepad = Gamepad.current;
+    }
 
     private void Update()
     {
+        if (gamepad == null)
+        {
+            Debug.LogError("No gamepad found. Make sure a gamepad is connected to the player's input.");
+            return;
+        }
+
         // get controller input
-        Vector2 stickInput = Gamepad.current.rightStick.ReadValue();
+        Vector2 stickInput = gamepad.rightStick.ReadValue();
         float controllerX = stickInput.x * sensitivityMultiplier;
         float controllerY = stickInput.y * sensitivityMultiplier;
 

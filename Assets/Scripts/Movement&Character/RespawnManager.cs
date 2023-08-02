@@ -27,6 +27,7 @@ public class RespawnManager : MonoBehaviour
         }
 
         int index = Random.Range(0, respawnPoints.Count);
+        Debug.Log($"Respawn point selected: {index}");
         return respawnPoints[index].position;
     }
 }

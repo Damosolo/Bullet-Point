@@ -10,12 +10,13 @@ public class PlayerController : MonoBehaviour
     public float jumpHeight = 2;
     public float slideSpeed = 8;
     public float slideDuration = 1;
-    public float gravity = 9.81f; 
+    public float gravity = 9.81f;
     public float lookSpeed = 2f;
     public float lookSensitivity = 1f;
-    public float slideCameraHeight = 0.5f;  
-    public int maxJumpCount = 2; 
+    public float slideCameraHeight = 0.5f;
+    public int maxJumpCount = 2;
     public int playerIndex = 0;
+    public bool canAct = true;
 
     private CharacterController controller;
     private Vector3 velocity;
@@ -28,6 +29,8 @@ public class PlayerController : MonoBehaviour
     private float xRotation = 0f;
     private Gamepad gamepad;
     private Health playerHealth;
+    private PlayerStatisticsDisplay statsDisplay;
+
 
     private void Start()
     {
@@ -36,11 +39,12 @@ public class PlayerController : MonoBehaviour
         baseHeight = controller.height;
         originalCameraPosition = playerCamera.transform.localPosition;
         playerHealth = GetComponent<Health>();
+        statsDisplay = FindObjectOfType<PlayerStatisticsDisplay>();
     }
 
     private void Update()
     {
-        if (Gamepad.all.Count <= playerIndex) 
+        if (Gamepad.all.Count <= playerIndex)
             return;
 
         gamepad = Gamepad.all[playerIndex];
@@ -57,7 +61,7 @@ public class PlayerController : MonoBehaviour
         Vector3 horizontalMovement = direction * speed;
         Vector3 verticalMovement = Vector3.up * velocity.y;
 
-   
+
         if (controller.isGrounded)
         {
             jumps = 0;
@@ -76,7 +80,7 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-      
+
         velocity.y -= gravity * Time.deltaTime;
 
         if (gamepad.buttonEast.wasPressedThisFrame && !isSliding)
@@ -100,12 +104,20 @@ public class PlayerController : MonoBehaviour
             {
                 horizontalMovement = direction * slideSpeed;
             }
+
+            if (!canAct) return;
+
+            playerHealth = GetComponent<Health>();
+            if (playerHealth == null)
+            {
+                Debug.LogError("Health component not found on player object");
+            }
         }
 
-       
+
         controller.Move((horizontalMovement + verticalMovement) * Time.deltaTime);
 
-       
+
         Vector2 lookInput = gamepad.rightStick.ReadValue();
 
         xRotation -= lookInput.y * lookSpeed * lookSensitivity;
@@ -113,22 +125,43 @@ public class PlayerController : MonoBehaviour
 
         playerCamera.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
         transform.Rotate(Vector3.up * lookInput.x * lookSpeed * lookSensitivity);
+
+
+        if (playerHealth.IsDead())
+        {
+            if (playerIndex == 0) // assuming playerIndex 0 is player 1
+            {
+                statsDisplay.AddDeathForPlayer1();
+            }
+            else if (playerIndex == 1) // assuming playerIndex 1 is player 2
+            {
+                statsDisplay.AddDeathForPlayer2();
+            }
+            Die();
+        }
     }
 
     public void Die()
     {
-        
+        Debug.Log("PlayerDied");
         Vector3 respawnPoint = RespawnManager.Instance.GetRandomRespawnPoint();
         controller.enabled = false;
         transform.position = respawnPoint;
         controller.enabled = true;
         Debug.Log(respawnPoint);
+        Debug.Log("Die method called");
 
-        playerHealth.SetHealth(100);
+        playerHealth.health = 100;
+        Invoke("EnableAct", 1.0f);
     }
 
     public Gamepad GetGamepad()
     {
         return gamepad;
+    }
+
+    public void EnableAct()
+    {
+        canAct = true;
     }
 }

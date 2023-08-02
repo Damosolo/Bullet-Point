@@ -2,19 +2,19 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections;
 
-
 public class RaycastShoot : MonoBehaviour
 {
-    public Camera fpsCamera; 
-    public float raycastRange = 100f; 
-    public float damage = 10f; 
-    public Vector2 recoilAmount = new Vector2(2f, 2f); 
-    public Transform adsPositionTransform; 
-    public float adsTransitionTime = 0.5f; 
-    public PlayerController playerController; 
+    public Camera fpsCamera;
+    public float raycastRange = 100f;
+    public float damage = 10f;
+    public Vector2 recoilAmount = new Vector2(2f, 2f);
+    public Transform adsPositionTransform;
+    public float adsTransitionTime = 0.5f;
+    public PlayerController playerController;
+    public PlayerStatisticsDisplay playerStatisticsDisplay;
 
-    private Vector3 originalPosition; 
-    private bool isAiming = false; 
+    private Vector3 originalPosition;
+    private bool isAiming = false;
 
     private void Start()
     {
@@ -45,36 +45,42 @@ public class RaycastShoot : MonoBehaviour
 
         if (rightTriggerValue > 0.1f)
         {
-            Vector3 rayOrigin = fpsCamera.ViewportToWorldPoint(new Vector3(0.5f, 0.5f, 0)); 
+            Vector3 rayOrigin = fpsCamera.ViewportToWorldPoint(new Vector3(0.5f, 0.5f, 0));
             RaycastHit hit;
 
-            
             if (Physics.Raycast(rayOrigin, fpsCamera.transform.forward, out hit, raycastRange))
             {
-                Debug.Log(hit.transform.name);
+                Debug.Log("Raycast hit detected");
 
-               
                 Debug.DrawLine(rayOrigin, hit.point, Color.red);
 
-               
                 Health health = hit.transform.GetComponent<Health>();
                 if (health != null)
                 {
-                    Debug.Log("Damage Done");
+                    Debug.Log("Health component found, calling TakeDamage");
                     health.TakeDamage(damage);
+                    if (health.IsDead())
+                    {
+                        // This player killed another player
+                        if (playerController.playerIndex == 1)
+                        {
+                            playerStatisticsDisplay.AddKillForPlayer1();
+                        }
+                        else if (playerController.playerIndex == 2)
+                        {
+                            playerStatisticsDisplay.AddKillForPlayer2();
+                        }
+                    }
                 }
             }
             else
             {
-               
                 Debug.DrawRay(rayOrigin, fpsCamera.transform.forward * raycastRange, Color.green);
             }
 
-            
             gamepad.SetMotorSpeeds(0.5f, 0.5f);
             Invoke("StopVibration", 0.3f);
 
-           
             fpsCamera.transform.Rotate(-recoilAmount.x * Random.Range(0.5f, 1f), recoilAmount.y * Random.Range(-1f, 1f), 0);
         }
     }
@@ -83,35 +89,28 @@ public class RaycastShoot : MonoBehaviour
     {
         isAiming = true;
         float startTime = Time.time;
-        float lerpFactor = 0;
-        while (Time.time < startTime + adsTransitionTime || lerpFactor < 1)
+        while (Time.time < startTime + adsTransitionTime)
         {
-            
-            lerpFactor = (Time.time - startTime) / adsTransitionTime;
-            UnityEngine.Debug.Log(lerpFactor);
+            float lerpFactor = (Time.time - startTime) / adsTransitionTime;
             transform.localPosition = Vector3.Lerp(originalPosition, adsPositionTransform.localPosition, lerpFactor);
             yield return null;
         }
-     
     }
 
     IEnumerator StopAimingDownSights()
     {
         isAiming = false;
         float startTime = Time.time;
-        float lerpFactor = 0;
-        while (Time.time < startTime + adsTransitionTime || lerpFactor < 1)
+        while (Time.time < startTime + adsTransitionTime)
         {
-            lerpFactor = (Time.time - startTime) / adsTransitionTime;
+            float lerpFactor = (Time.time - startTime) / adsTransitionTime;
             transform.localPosition = Vector3.Lerp(adsPositionTransform.localPosition, originalPosition, lerpFactor);
             yield return null;
         }
-
-
     }
 
     void StopVibration()
     {
-        playerController.GetGamepad().SetMotorSpeeds(0f, 0f); 
+        playerController.GetGamepad().SetMotorSpeeds(0f, 0f);
     }
 }
