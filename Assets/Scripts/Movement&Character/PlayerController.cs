@@ -32,6 +32,11 @@ public class PlayerController : MonoBehaviour
     private PlayerStatisticsDisplay statsDisplay;
 
 
+    Animator animator;
+    int isWalkingHash;
+    int isRunningHash;
+    private PlayerInput playerInput;
+
     private void Start()
     {
         controller = GetComponent<CharacterController>();
@@ -40,6 +45,11 @@ public class PlayerController : MonoBehaviour
         originalCameraPosition = playerCamera.transform.localPosition;
         playerHealth = GetComponent<Health>();
         statsDisplay = FindObjectOfType<PlayerStatisticsDisplay>();
+        playerInput = GetComponent<PlayerInput>();
+
+        animator = GetComponent<Animator>();
+        isWalkingHash = Animator.StringToHash("isWalking");
+        isRunningHash = Animator.StringToHash("isRunning");
     }
 
     private void Update()
@@ -50,16 +60,30 @@ public class PlayerController : MonoBehaviour
         gamepad = Gamepad.all[playerIndex];
 
         float speed = walkSpeed;
-        if (gamepad.leftStickButton.isPressed)
+
+        bool isWalking = animator.GetBool(isWalkingHash);
+        bool isRunning = animator.GetBool(isRunningHash);
+
+
+        bool runPressed = gamepad.leftStickButton.isPressed; // Running
+
+        HandleInput();
+        HandleMovement();
+
+
+
+        // If gamepad is true and player runs
+        if (isRunning && (runPressed || fowardPressed))
         {
             speed = sprintSpeed;
+            animator.SetBool(isRunningHash, true);
+        }
+        // If gamepad is false then player stops running
+        if (isRunning && (!runPressed || !fowardPressed))
+        {
+            animator.SetBool(isRunningHash, false);
         }
 
-        Vector2 stickInput = gamepad.leftStick.ReadValue();
-        Vector3 input = new Vector3(stickInput.x, 0, stickInput.y);
-        Vector3 direction = transform.TransformDirection(input).normalized;
-        Vector3 horizontalMovement = direction * speed;
-        Vector3 verticalMovement = Vector3.up * velocity.y;
 
 
         if (controller.isGrounded)
@@ -115,7 +139,7 @@ public class PlayerController : MonoBehaviour
         }
 
 
-        controller.Move((horizontalMovement + verticalMovement) * Time.deltaTime);
+        
 
 
         Vector2 lookInput = gamepad.rightStick.ReadValue();
@@ -139,6 +163,22 @@ public class PlayerController : MonoBehaviour
             }
             Die();
         }
+    }
+
+    void HandleInput()
+    {
+        Vector2 stickInput = gamepad.leftStick.ReadValue();
+        Vector3 input = new Vector3(stickInput.x, 0, stickInput.y);
+        Vector3 direction = transform.TransformDirection(input).normalized;
+        Vector3 horizontalMovement = direction * speed;
+
+        controller.Move(input * Time.deltaTime * speed);
+
+    }
+
+    void HandleMovement()
+    {
+        Vector3 move = new Vector3(movement().x, HandleMovement,y);
     }
 
     public void Die()
