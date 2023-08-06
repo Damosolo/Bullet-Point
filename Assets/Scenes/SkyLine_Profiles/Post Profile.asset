@@ -1,5 +1,31 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-9189847692157021022
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6050e2d5de785ce4d931e4dbdbf2d755, type: 3}
+  m_Name: ChromaticAberration
+  m_EditorClassIdentifier: 
+  active: 0
+  enabled:
+    overrideState: 1
+    value: 1
+  spectralLut:
+    overrideState: 1
+    value: {fileID: 0}
+    defaultState: 1
+  intensity:
+    overrideState: 1
+    value: 0
+  fastMode:
+    overrideState: 1
+    value: 0
 --- !u!114 &-5266916365665849407
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -145,6 +171,7 @@ MonoBehaviour:
   - {fileID: 3304127221189057021}
   - {fileID: -809591434624502160}
   - {fileID: -973273943793581791}
+  - {fileID: -9189847692157021022}
 --- !u!114 &3304127221189057021
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -286,13 +313,13 @@ MonoBehaviour:
     value: 100
   lift:
     overrideState: 1
-    value: {x: 1, y: 0.99884385, z: 0.8934304, w: 0}
+    value: {x: 0.999131, y: 0.98481464, z: 1, w: 0}
   gamma:
     overrideState: 1
-    value: {x: 0.9639665, y: 1, z: 0.80241257, w: 0}
+    value: {x: 0.96106297, y: 0.9286119, z: 1, w: 0}
   gain:
     overrideState: 1
-    value: {x: 0.9509781, y: 1, z: 0.67649126, w: 0}
+    value: {x: 0.98630077, y: 0.912964, z: 1, w: 0}
   masterCurve:
     overrideState: 1
     value:
@@ -1555,13 +1582,13 @@ MonoBehaviour:
     value: 1
   filtering:
     overrideState: 1
-    value: {x: 38.997597, y: 83.99756}
+    value: {x: 14.360063, y: 59.36006}
   minLuminance:
     overrideState: 1
-    value: 0.31
+    value: 0.4
   maxLuminance:
     overrideState: 1
-    value: 0.86
+    value: 5.35
   keyValue:
     overrideState: 1
     value: 0.94
@@ -1598,7 +1625,7 @@ MonoBehaviour:
     value: 26.8
   focalLength:
     overrideState: 1
-    value: 28
+    value: 27
   kernelSize:
     overrideState: 1
     value: 1

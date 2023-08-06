@@ -12,13 +12,21 @@ public class RaycastShoot : MonoBehaviour
     public float adsTransitionTime = 0.5f;
     public PlayerController playerController;
     public PlayerStatisticsDisplay playerStatisticsDisplay;
+    public GameObject muzzleFlashEffect;
+    public AudioClip shotSound;
+    public AudioClip playerHitSound;
+    public AudioSource audioSource;
+    public Transform muzzlePosition;
 
     private Vector3 originalPosition;
     private bool isAiming = false;
+    private Coroutine shootCoroutine;
+    private float originalLookSpeed;
 
     private void Start()
     {
         originalPosition = transform.localPosition;
+        originalLookSpeed = playerController.lookSpeed;
     }
 
     void Update()
@@ -37,31 +45,53 @@ public class RaycastShoot : MonoBehaviour
         if (leftTriggerValue > 0.1f && !isAiming)
         {
             StartCoroutine(AimDownSights());
+            playerController.lookSpeed = originalLookSpeed / 2;  // Half the look speed when ADS
         }
         else if (leftTriggerValue <= 0.1f && isAiming)
         {
             StartCoroutine(StopAimingDownSights());
+            playerController.lookSpeed = originalLookSpeed;  // Restore the look speed when not ADS
         }
 
         if (rightTriggerValue > 0.1f)
+        {
+            if (shootCoroutine == null)
+            {
+                gamepad.SetMotorSpeeds(0.5f, 0.5f);  // Vibrate controller when shooting
+                shootCoroutine = StartCoroutine(Shoot());
+            }
+        }
+        else
+        {
+            if (shootCoroutine != null)
+            {
+                gamepad.SetMotorSpeeds(0f, 0f);  // Stop vibration when not shooting
+                StopCoroutine(shootCoroutine);
+                shootCoroutine = null;
+            }
+        }
+    }
+
+    IEnumerator Shoot()
+    {
+        while (true)
         {
             Vector3 rayOrigin = fpsCamera.ViewportToWorldPoint(new Vector3(0.5f, 0.5f, 0));
             RaycastHit hit;
 
             if (Physics.Raycast(rayOrigin, fpsCamera.transform.forward, out hit, raycastRange))
             {
-                Debug.Log("Raycast hit detected");
+                Debug.Log(hit.transform.name);
 
                 Debug.DrawLine(rayOrigin, hit.point, Color.red);
 
                 Health health = hit.transform.GetComponent<Health>();
                 if (health != null)
                 {
-                    Debug.Log("Health component found, calling TakeDamage");
+                    Debug.Log("Damage Done");
                     health.TakeDamage(damage);
                     if (health.IsDead())
                     {
-                        // This player killed another player
                         if (playerController.playerIndex == 1)
                         {
                             playerStatisticsDisplay.AddKillForPlayer1();
@@ -71,17 +101,28 @@ public class RaycastShoot : MonoBehaviour
                             playerStatisticsDisplay.AddKillForPlayer2();
                         }
                     }
+
+                    // Play the player hit sound
+                    if (audioSource != null && playerHitSound != null)
+                    {
+                        audioSource.PlayOneShot(playerHitSound);
+                    }
                 }
             }
-            else
+
+            // Muzzle flash and shot sound effect
+            if (muzzleFlashEffect != null)
             {
-                Debug.DrawRay(rayOrigin, fpsCamera.transform.forward * raycastRange, Color.green);
+                GameObject muzzleFlashInstance = Instantiate(muzzleFlashEffect, muzzlePosition.position, Quaternion.identity);
+                Destroy(muzzleFlashInstance, .5f);
             }
 
-            gamepad.SetMotorSpeeds(0.5f, 0.5f);
-            Invoke("StopVibration", 0.3f);
+            if (audioSource != null && shotSound != null)
+            {
+                audioSource.PlayOneShot(shotSound);
+            }
 
-            fpsCamera.transform.Rotate(-recoilAmount.x * Random.Range(0.5f, 1f), recoilAmount.y * Random.Range(-1f, 1f), 0);
+            yield return new WaitForSeconds(0.1f); // Adjust this for the rate of fire
         }
     }
 
@@ -95,6 +136,9 @@ public class RaycastShoot : MonoBehaviour
             transform.localPosition = Vector3.Lerp(originalPosition, adsPositionTransform.localPosition, lerpFactor);
             yield return null;
         }
+
+        // After the while loop, force the position to be exactly the adsPosition
+        transform.localPosition = adsPositionTransform.localPosition;
     }
 
     IEnumerator StopAimingDownSights()
@@ -107,10 +151,5 @@ public class RaycastShoot : MonoBehaviour
             transform.localPosition = Vector3.Lerp(adsPositionTransform.localPosition, originalPosition, lerpFactor);
             yield return null;
         }
-    }
-
-    void StopVibration()
-    {
-        playerController.GetGamepad().SetMotorSpeeds(0f, 0f);
     }
 }
