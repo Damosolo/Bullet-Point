@@ -6,6 +6,13 @@ public class Health : MonoBehaviour
     public PlayerStatisticsDisplay playerStatisticsDisplay;
     public PlayerController playerController;
 
+    RagdollScript ragdollScript;
+
+    private void Start()
+    {
+        ragdollScript = GameObject.Find("Character").GetComponent<RagdollScript>();
+
+    }
     public void TakeDamage(float amount)
     {
         Debug.Log("TakeDamage called, damage amount: " + amount);
@@ -19,6 +26,7 @@ public class Health : MonoBehaviour
             {
                 playerStatisticsDisplay.AddDeathForPlayer1();
                 playerStatisticsDisplay.AddKillForPlayer2(); // Add kill for Player 2 when Player 1 dies
+                ragdollScript.RagdollOn();
             }
             else if (playerController.playerIndex == 1)
             {
@@ -27,6 +35,8 @@ public class Health : MonoBehaviour
             }
 
             playerController.Die(); // Call Die() here before resetting health.
+
+
 
             health = 100f;
         }
