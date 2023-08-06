@@ -13,7 +13,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2508018298791184014, guid: b2228afacfd8ed34a9ce5617e376d3e9, type: 3}
       propertyPath: m_Name
-      value: Player Anchor 2
+      value: Player Anchor 2 Variant
       objectReference: {fileID: 0}
     - target: {fileID: 2508018298791184015, guid: b2228afacfd8ed34a9ce5617e376d3e9, type: 3}
       propertyPath: m_RootOrder
@@ -21,15 +21,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2508018298791184015, guid: b2228afacfd8ed34a9ce5617e376d3e9, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.732769
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2508018298791184015, guid: b2228afacfd8ed34a9ce5617e376d3e9, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.4588271
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2508018298791184015, guid: b2228afacfd8ed34a9ce5617e376d3e9, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -5.910822
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2508018298791184015, guid: b2228afacfd8ed34a9ce5617e376d3e9, type: 3}
       propertyPath: m_LocalRotation.w

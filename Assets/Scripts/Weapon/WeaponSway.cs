@@ -6,12 +6,21 @@ public class WeaponSway : MonoBehaviour
     [Header("Sway Settings")]
     [SerializeField] private float speed;
     [SerializeField] private float sensitivityMultiplier;
+    [Header("Controller Settings")]
+    [SerializeField] private int controllerIndex; // Specify the controller index without the Range attribute
     private Gamepad gamepad;
 
     private void Start()
     {
-        // Get the main gamepad connected to the player's input
-        gamepad = Gamepad.current;
+        // Check if the controller index is within the range of connected gamepads
+        if (controllerIndex >= 0 && controllerIndex < Gamepad.all.Count)
+        {
+            gamepad = Gamepad.all[controllerIndex];
+        }
+        else
+        {
+            Debug.LogError("Invalid controller index. Make sure the index is within the range of connected gamepads.");
+        }
     }
 
     private void Update()
