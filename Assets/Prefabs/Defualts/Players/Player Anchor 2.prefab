@@ -3055,7 +3055,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5785446832314285959}
-  - component: {fileID: 5785446832314285960}
   m_Layer: 0
   m_Name: Gun holder
   m_TagString: Untagged
@@ -3079,20 +3078,6 @@ Transform:
   m_Father: {fileID: 5785446833006550377}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: -3.533, z: 0}
---- !u!114 &5785446832314285960
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5785446832314285958}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b390b8e61f9056f46bb960421f265a61, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  speed: 4
-  sensitivityMultiplier: 6
 --- !u!1 &5785446832659337914
 GameObject:
   m_ObjectHideFlags: 0
@@ -3733,6 +3718,11 @@ MonoBehaviour:
   adsTransitionTime: 0.2
   playerController: {fileID: 5785446831373736090}
   playerStatisticsDisplay: {fileID: 0}
+  muzzleFlashEffect: {fileID: 0}
+  shotSound: {fileID: 0}
+  playerHitSound: {fileID: 0}
+  audioSource: {fileID: 0}
+  muzzlePosition: {fileID: 0}
 --- !u!1 &7130080726561540793
 GameObject:
   m_ObjectHideFlags: 0
