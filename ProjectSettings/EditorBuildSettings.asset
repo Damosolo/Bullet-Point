@@ -9,6 +9,6 @@ EditorBuildSettings:
     path: Assets/Scenes/OldSkyline.unity
     guid: d097c2ef2ee112b41b1c9583132f6850
   - enabled: 1
-    path: Assets/Scenes/Sky Line.unity
+    path: Assets/Scenes/Forest.unity
     guid: e26589d43c84acd4caf6ca2999099042
   m_configObjects: {}
