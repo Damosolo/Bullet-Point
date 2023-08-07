@@ -7,17 +7,19 @@ public class Health : MonoBehaviour
     public PlayerController playerController;
 
     RagdollScript ragdollScript;
+    public bool isHit = false;
 
     private void Start()
     {
         ragdollScript = GameObject.Find("Character").GetComponent<RagdollScript>();
-
     }
+
     public void TakeDamage(float amount)
     {
         Debug.Log("TakeDamage called, damage amount: " + amount);
         health -= amount;
         Debug.Log("Current health: " + health);
+        isHit = true;
 
         if (health <= 0f)
         {
@@ -36,9 +38,8 @@ public class Health : MonoBehaviour
 
             playerController.Die(); // Call Die() here before resetting health.
 
-
-
             health = 100f;
+            isHit = false; // Reset the isHit flag after dying.
         }
     }
 
