@@ -1,10 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
+    public HealthBar healthBarPrefab; // Reference to the HealthBar GameObject in the scene
     public float walkSpeed = 2;
     public float sprintSpeed = 6;
     public float jumpHeight = 2;
@@ -30,7 +29,7 @@ public class PlayerController : MonoBehaviour
     private Gamepad gamepad;
     private Health playerHealth;
     private PlayerStatisticsDisplay statsDisplay;
-
+    private HealthBar healthBarInstance; // Reference to the instantiated HealthBar
 
     private void Start()
     {
@@ -40,10 +39,26 @@ public class PlayerController : MonoBehaviour
         originalCameraPosition = playerCamera.transform.localPosition;
         playerHealth = GetComponent<Health>();
         statsDisplay = FindObjectOfType<PlayerStatisticsDisplay>();
+
+        // Find the HealthBar with the correct name for this player index
+        string healthBarName = "HealthBar" + playerIndex;
+        healthBarInstance = GameObject.Find(healthBarName)?.GetComponent<HealthBar>();
+        if (healthBarInstance == null)
+        {
+            Debug.LogError($"HealthBar with name {healthBarName} not found!");
+            return;
+        }
+
+        healthBarInstance.Setup(playerHealth, playerIndex);
     }
 
+    [SerializeField] GameObject GroundCheck;
+    [SerializeField] LayerMask GroundMask;
+
+    bool isground;
     private void Update()
     {
+        healthBarInstance.SetHealth(playerHealth.currentHealth);
         if (Gamepad.all.Count <= playerIndex)
             return;
 
@@ -60,10 +75,14 @@ public class PlayerController : MonoBehaviour
         Vector3 direction = transform.TransformDirection(input).normalized;
         Vector3 horizontalMovement = direction * speed;
         Vector3 verticalMovement = Vector3.up * velocity.y;
-
-
-        if (controller.isGrounded)
+        isground = Physics.CheckSphere(GroundCheck.transform.position, 0.4f, GroundMask);
+        if (isground)
         {
+            if (isground && velocity.y < 0)
+            {
+                velocity.y = -2f;
+            }
+
             jumps = 0;
             if (gamepad.buttonSouth.wasPressedThisFrame)
             {
@@ -79,7 +98,6 @@ public class PlayerController : MonoBehaviour
                 velocity.y = Mathf.Sqrt(2 * jumpHeight * gravity);
             }
         }
-
 
         velocity.y -= gravity * Time.deltaTime;
 
@@ -107,25 +125,22 @@ public class PlayerController : MonoBehaviour
 
             if (!canAct) return;
 
-            playerHealth = GetComponent<Health>();
-            if (playerHealth == null)
+            // Check for player input to take damage
+            if (gamepad.buttonWest.wasPressedThisFrame) // Assuming buttonWest is the attack button
             {
-                Debug.LogError("Health component not found on player object");
+                float damageAmount = 10f; // Change this to the actual damage amount you want
+                playerHealth.TakeDamage(damageAmount);
+                
             }
         }
 
-
         controller.Move((horizontalMovement + verticalMovement) * Time.deltaTime);
 
-
         Vector2 lookInput = gamepad.rightStick.ReadValue();
-
         xRotation -= lookInput.y * lookSpeed * lookSensitivity;
         xRotation = Mathf.Clamp(xRotation, -90f, 90f);
-
         playerCamera.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
         transform.Rotate(Vector3.up * lookInput.x * lookSpeed * lookSensitivity);
-
 
         if (playerHealth.IsDead())
         {
@@ -151,7 +166,8 @@ public class PlayerController : MonoBehaviour
         Debug.Log(respawnPoint);
         Debug.Log("Die method called");
 
-        playerHealth.health = 100;
+        playerHealth.currentHealth = 100;
+        healthBarInstance.SetHealth(playerHealth.currentHealth);
         Invoke("EnableAct", 1.0f);
     }
 

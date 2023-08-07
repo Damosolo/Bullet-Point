@@ -2,7 +2,8 @@ using UnityEngine;
 
 public class Health : MonoBehaviour
 {
-    public float health = 100f;
+    public float maxHealth = 100f; // Rename the 'health' variable to 'maxHealth'
+    public float currentHealth = 100f; // Rename the 'health' variable to 'currentHealth'
     public PlayerStatisticsDisplay playerStatisticsDisplay;
     public PlayerController playerController;
 
@@ -17,11 +18,11 @@ public class Health : MonoBehaviour
     public void TakeDamage(float amount)
     {
         Debug.Log("TakeDamage called, damage amount: " + amount);
-        health -= amount;
-        Debug.Log("Current health: " + health);
+        currentHealth -= amount; // Update 'health' to 'currentHealth'
+        Debug.Log("Current health: " + currentHealth);
         isHit = true;
 
-        if (health <= 0f)
+        if (currentHealth <= 0f) // Update 'health' to 'currentHealth'
         {
             Debug.Log("Health is zero or less");
             if (playerController.playerIndex == 0)
@@ -38,14 +39,14 @@ public class Health : MonoBehaviour
 
             playerController.Die(); // Call Die() here before resetting health.
 
-            health = 100f;
+            currentHealth = maxHealth; // Update 'health' to 'currentHealth'
             isHit = false; // Reset the isHit flag after dying.
         }
     }
 
     public bool IsDead()
     {
-        bool isDead = health <= 0f;
+        bool isDead = currentHealth <= 0f; // Update 'health' to 'currentHealth'
         Debug.Log("IsDead: " + isDead);
         return isDead;
     }
