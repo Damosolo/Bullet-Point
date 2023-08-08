@@ -8,10 +8,16 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/OldSkyline.unity
     guid: d097c2ef2ee112b41b1c9583132f6850
+  - enabled: 1
+    path: Assets/Scenes/Main Menu.unity
+    guid: 3517801cb45157d43967d00d8b972181
   - enabled: 0
     path: Assets/Scenes/Forest.unity
     guid: e26589d43c84acd4caf6ca2999099042
   - enabled: 1
     path: Assets/Scenes/Skyline.unity
     guid: 3feef00009bb6824c958d29d4390d5c0
+  - enabled: 1
+    path: Assets/Scenes/Mall.unity
+    guid: 883eb2e5da566f54587e6d71525c407e
   m_configObjects: {}

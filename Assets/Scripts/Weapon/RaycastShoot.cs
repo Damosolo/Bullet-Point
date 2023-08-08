@@ -45,19 +45,19 @@ public class RaycastShoot : MonoBehaviour
         if (leftTriggerValue > 0.1f && !isAiming)
         {
             StartCoroutine(AimDownSights());
-            playerController.lookSpeed = originalLookSpeed / 2;  // Half the look speed when ADS
+            playerController.lookSpeed = originalLookSpeed / 2; // Half the look speed when ADS
         }
         else if (leftTriggerValue <= 0.1f && isAiming)
         {
             StartCoroutine(StopAimingDownSights());
-            playerController.lookSpeed = originalLookSpeed;  // Restore the look speed when not ADS
+            playerController.lookSpeed = originalLookSpeed; // Restore the look speed when not ADS
         }
 
         if (rightTriggerValue > 0.1f)
         {
             if (shootCoroutine == null)
             {
-                gamepad.SetMotorSpeeds(0.5f, 0.5f);  // Vibrate controller when shooting
+                gamepad.SetMotorSpeeds(0.5f, 0.5f); // Vibrate controller when shooting
                 shootCoroutine = StartCoroutine(Shoot());
             }
         }
@@ -65,7 +65,7 @@ public class RaycastShoot : MonoBehaviour
         {
             if (shootCoroutine != null)
             {
-                gamepad.SetMotorSpeeds(0f, 0f);  // Stop vibration when not shooting
+                gamepad.SetMotorSpeeds(0f, 0f); // Stop vibration when not shooting
                 StopCoroutine(shootCoroutine);
                 shootCoroutine = null;
             }
@@ -85,27 +85,32 @@ public class RaycastShoot : MonoBehaviour
 
                 Debug.DrawLine(rayOrigin, hit.point, Color.red);
 
-                Health health = hit.transform.GetComponent<Health>();
-                if (health != null)
+                PlayerController hitPlayer = hit.transform.GetComponent<PlayerController>();
+                if (hitPlayer == null || hitPlayer.playerIndex != playerController.playerIndex)
                 {
-                    Debug.Log("Damage Done");
-                    health.TakeDamage(damage);
-                    if (health.IsDead())
+                    // Only execute this code if the raycast did not hit the player themselves
+                    Health health = hit.transform.GetComponent<Health>();
+                    if (health != null)
                     {
-                        if (playerController.playerIndex == 1)
+                        Debug.Log("Damage Done");
+                        health.TakeDamage(damage);
+                        if (health.IsDead())
                         {
-                            playerStatisticsDisplay.AddKillForPlayer1();
+                            if (playerController.playerIndex == 1)
+                            {
+                                playerStatisticsDisplay.AddKillForPlayer1();
+                            }
+                            else if (playerController.playerIndex == 2)
+                            {
+                                playerStatisticsDisplay.AddKillForPlayer2();
+                            }
                         }
-                        else if (playerController.playerIndex == 2)
-                        {
-                            playerStatisticsDisplay.AddKillForPlayer2();
-                        }
-                    }
 
-                    // Play the player hit sound
-                    if (audioSource != null && playerHitSound != null)
-                    {
-                        audioSource.PlayOneShot(playerHitSound);
+                        // Play the player hit sound
+                        if (audioSource != null && playerHitSound != null)
+                        {
+                            audioSource.PlayOneShot(playerHitSound);
+                        }
                     }
                 }
             }

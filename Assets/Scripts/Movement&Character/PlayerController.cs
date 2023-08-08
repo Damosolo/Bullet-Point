@@ -41,15 +41,15 @@ public class PlayerController : MonoBehaviour
         statsDisplay = FindObjectOfType<PlayerStatisticsDisplay>();
 
         // Find the HealthBar with the correct name for this player index
-        string healthBarName = "HealthBar" + playerIndex;
-        healthBarInstance = GameObject.Find(healthBarName)?.GetComponent<HealthBar>();
-        if (healthBarInstance == null)
-        {
-            Debug.LogError($"HealthBar with name {healthBarName} not found!");
-            return;
-        }
+        //string healthBarName = "HealthBar" + playerIndex;
+        //healthBarInstance = GameObject.Find(healthBarName)?.GetComponent<HealthBar>();
+        //if (healthBarInstance == null)
+        //{
+        //    Debug.LogError($"HealthBar with name {healthBarName} not found!");
+        //    return;
+        //}
 
-        healthBarInstance.Setup(playerHealth, playerIndex);
+        //healthBarInstance.Setup(playerHealth, playerIndex);
     }
 
     [SerializeField] GameObject GroundCheck;
