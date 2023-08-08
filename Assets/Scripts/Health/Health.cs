@@ -12,7 +12,7 @@ public class Health : MonoBehaviour
 
     private void Start()
     {
-        ragdollScript = GameObject.Find("Character").GetComponent<RagdollScript>();
+        //ragdollScript = GameObject.Find("Character").GetComponent<RagdollScript>();
     }
 
     public void TakeDamage(float amount)
