@@ -31,6 +31,7 @@ public class PlayerController : MonoBehaviour
     private Health playerHealth;
     private PlayerStatisticsDisplay statsDisplay;
 
+    [SerializeField] private Animator animator;
 
     private void Start()
     {
@@ -60,6 +61,17 @@ public class PlayerController : MonoBehaviour
         Vector3 direction = transform.TransformDirection(input).normalized;
         Vector3 horizontalMovement = direction * speed;
         Vector3 verticalMovement = Vector3.up * velocity.y;
+
+
+
+        //Read movement input from the left stick
+        //Calculate movement vector
+        Vector3 movement = new Vector3(stickInput.x, 0, stickInput.y);
+        movement = transform.TransformDirection(movement);
+        // Move the player using CharacterController
+        controller.Move(movement * walkSpeed * Time.deltaTime);
+        // Update animation based on input
+        UpdateWalkingAnimation(movement.magnitude);
 
 
         if (controller.isGrounded)
@@ -162,5 +174,25 @@ public class PlayerController : MonoBehaviour
     public void EnableAct()
     {
         canAct = true;
+    }
+    private void UpdateWalkingAnimation(float movementMagnitude)
+    {
+        if (animator != null)
+        {
+            // Get the player's forward direction in the horizontal plane
+            Vector3 playerForward = transform.forward;
+            playerForward.y = 0;
+            playerForward.Normalize();
+
+            //Debug.Log("Updating walking animation.");
+
+            // Set isWalking parameter based on movement magnitude
+            animator.SetBool("isWalking", movementMagnitude > 0.1f);
+
+            //Debug.Log("isWalking set to: " + (movementMagnitude > 0.1f));
+
+            // Get the movement direction
+            //Vector3 moveDirection = new Vector3(moveInput.x, 0, moveInput.y);
+        }
     }
 }
