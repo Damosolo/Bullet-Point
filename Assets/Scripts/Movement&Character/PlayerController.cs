@@ -71,6 +71,9 @@ public class PlayerController : MonoBehaviour
             {
                 jumps++;
                 velocity.y = Mathf.Sqrt(2 * jumpHeight * gravity);
+
+                animator.SetTrigger("isJumping");
+
             }
         }
         else
@@ -79,6 +82,8 @@ public class PlayerController : MonoBehaviour
             {
                 jumps++;
                 velocity.y = Mathf.Sqrt(2 * jumpHeight * gravity);
+
+                animator.SetTrigger("isJumping");
             }
         }
 
@@ -91,7 +96,7 @@ public class PlayerController : MonoBehaviour
             slideTimer = 0;
             controller.height = baseHeight / 2;
             playerCamera.transform.localPosition = new Vector3(originalCameraPosition.x, originalCameraPosition.y - slideCameraHeight, originalCameraPosition.z);
-            animator.SetBool("isWalking", true); // Activate Slide Animation
+            animator.SetBool("isSliding", true); // Activate Slide Animation
         }
 
         if (isSliding)
