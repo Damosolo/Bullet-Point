@@ -29,7 +29,7 @@ public class Health : MonoBehaviour
             {
                 playerStatisticsDisplay.AddDeathForPlayer1();
                 playerStatisticsDisplay.AddKillForPlayer2(); // Add kill for Player 2 when Player 1 dies
-                ragdollScript.RagdollOn();
+                //ragdollScript.RagdollOn();
             }
             else if (playerController.playerIndex == 1)
             {
