@@ -56,19 +56,10 @@ public class PlayerController : MonoBehaviour
             speed = sprintSpeed;
         }
 
-        //Vector2 stickInput = gamepad.leftStick.ReadValue();
-        //Vector3 input = new Vector3(stickInput.x, 0, stickInput.y);
-        //Vector3 direction = transform.TransformDirection(input).normalized;
-        //Vector3 horizontalMovement = direction * speed;
-        //Vector3 verticalMovement = Vector3.up * velocity.y;
-
-
-
         Vector2 stickInput = gamepad.leftStick.ReadValue();
         Vector3 input = new Vector3(stickInput.x, 0, stickInput.y);
         Vector3 direction = transform.TransformDirection(input).normalized;
         Vector3 horizontalMovement = direction * speed;
-
         UpdateWalkingAnimation(horizontalMovement.magnitude);
 
         Vector3 verticalMovement = Vector3.up * velocity.y;
@@ -100,6 +91,7 @@ public class PlayerController : MonoBehaviour
             slideTimer = 0;
             controller.height = baseHeight / 2;
             playerCamera.transform.localPosition = new Vector3(originalCameraPosition.x, originalCameraPosition.y - slideCameraHeight, originalCameraPosition.z);
+            animator.SetBool("isWalking", true); // Activate Slide Animation
         }
 
         if (isSliding)
@@ -109,6 +101,7 @@ public class PlayerController : MonoBehaviour
             {
                 isSliding = false;
                 controller.height = baseHeight;
+                animator.SetBool("isSliding", false); // Disable Sliding Animation
                 playerCamera.transform.localPosition = originalCameraPosition;
             }
             else
@@ -186,8 +179,6 @@ public class PlayerController : MonoBehaviour
 
             Debug.Log("isWalking set to: " + (movementMagnitude > 0.1f));
 
-            // Get the movement direction
-            //Vector3 moveDirection = new Vector3(moveInput.x, 0, moveInput.y);
         }
     }
 }
