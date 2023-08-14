@@ -17,6 +17,7 @@ public class RaycastShoot : MonoBehaviour
     public AudioClip playerHitSound;
     public AudioSource audioSource;
     public Transform muzzlePosition;
+    public float fireRate = 0.1f;
 
     private Vector3 originalPosition;
     private bool isAiming = false;
@@ -74,6 +75,8 @@ public class RaycastShoot : MonoBehaviour
 
     IEnumerator Shoot()
     {
+        Gamepad gamepad = playerController.GetGamepad(); // Get the gamepad here
+
         while (true)
         {
             Vector3 rayOrigin = fpsCamera.ViewportToWorldPoint(new Vector3(0.5f, 0.5f, 0));
@@ -82,7 +85,6 @@ public class RaycastShoot : MonoBehaviour
             if (Physics.Raycast(rayOrigin, fpsCamera.transform.forward, out hit, raycastRange))
             {
                 Debug.Log(hit.transform.name);
-
                 Debug.DrawLine(rayOrigin, hit.point, Color.red);
 
                 PlayerController hitPlayer = hit.transform.GetComponent<PlayerController>();
@@ -127,9 +129,17 @@ public class RaycastShoot : MonoBehaviour
                 audioSource.PlayOneShot(shotSound);
             }
 
-            yield return new WaitForSeconds(0.1f); // Adjust this for the rate of fire
+            if (gamepad != null)
+            {
+                gamepad.SetMotorSpeeds(0.5f, 0.5f); // Vibrate controller for each shot
+                yield return new WaitForSeconds(0.05f); // Vibration duration for each shot
+                gamepad.SetMotorSpeeds(0f, 0f); // Stop vibration for each shot
+            }
+
+            yield return new WaitForSeconds(fireRate - 0.05f); // Adjusted delay for the rate of fire
         }
     }
+
 
     IEnumerator AimDownSights()
     {

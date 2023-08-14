@@ -12,6 +12,8 @@ GameObject:
   - component: {fileID: 1744611032832212284}
   - component: {fileID: 1744611032832212274}
   - component: {fileID: 6302079375383206764}
+  - component: {fileID: 344294762937235224}
+  - component: {fileID: 6333155135543723671}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -88,3 +90,41 @@ MonoBehaviour:
   threeSecondTimerText: {fileID: 0}
   fiveMinuteTimerText: {fileID: 0}
   chosenScenes: []
+--- !u!114 &344294762937235224
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1744611032832212287}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 69c96cb86daa0634bbac61ae1e55e1c5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerIndex: 0
+  weapon1: {fileID: 0}
+  weapon2: {fileID: 0}
+  objectToActivateDuringADS: {fileID: 0}
+  mainCamera: {fileID: 0}
+  zoomedFOV: 10
+  zoomTransitionTime: 0.1
+--- !u!114 &6333155135543723671
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1744611032832212287}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 69c96cb86daa0634bbac61ae1e55e1c5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerIndex: 0
+  weapon1: {fileID: 0}
+  weapon2: {fileID: 0}
+  objectToActivateDuringADS: {fileID: 0}
+  mainCamera: {fileID: 0}
+  zoomedFOV: 20
+  zoomTransitionTime: 0.5

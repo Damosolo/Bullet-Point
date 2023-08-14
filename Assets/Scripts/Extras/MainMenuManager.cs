@@ -6,7 +6,7 @@ public class MainMenuManager : MonoBehaviour
     public void PlayGame()
     {
         // Load a random scene from the list of scenes
-        string[] scenes = { "Skyline", "Mall", "Forest" }; // Add your scene names here
+        string[] scenes = { "Skyline", "Mall" }; // Add your scene names here
         string randomScene = scenes[Random.Range(0, scenes.Length)];
         SceneManager.LoadScene(randomScene);
     }
