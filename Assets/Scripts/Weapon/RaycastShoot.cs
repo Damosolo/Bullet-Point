@@ -1,6 +1,8 @@
+using System.Collections;
+using UnityEditor.Build.Content;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using System.Collections;
+
 
 public class RaycastShoot : MonoBehaviour
 {
@@ -18,16 +20,22 @@ public class RaycastShoot : MonoBehaviour
     public AudioSource audioSource;
     public Transform muzzlePosition;
     public float fireRate = 0.1f;
+    public float reloadTime = 1.5f;
+    public int maxAmmo;
+    public PlayerInput playerInput;
 
     private Vector3 originalPosition;
     private bool isAiming = false;
     private Coroutine shootCoroutine;
     private float originalLookSpeed;
+    private int currentAmmo;
+    private bool isReloading = false;
 
     private void Start()
     {
         originalPosition = transform.localPosition;
         originalLookSpeed = playerController.lookSpeed;
+        currentAmmo = maxAmmo; // Initialize current ammo count
     }
 
     void Update()
@@ -43,6 +51,13 @@ public class RaycastShoot : MonoBehaviour
         float rightTriggerValue = gamepad.rightTrigger.ReadValue();
         float leftTriggerValue = gamepad.leftTrigger.ReadValue();
 
+        // Check for 'West' button press to reload
+        if (gamepad.buttonWest.wasPressedThisFrame && !isReloading && currentAmmo < maxAmmo)
+        {
+            StartCoroutine(Reload());
+        }
+
+        // Handle aiming
         if (leftTriggerValue > 0.1f && !isAiming)
         {
             StartCoroutine(AimDownSights());
@@ -56,7 +71,7 @@ public class RaycastShoot : MonoBehaviour
 
         if (rightTriggerValue > 0.1f)
         {
-            if (shootCoroutine == null)
+            if (currentAmmo > 0 && shootCoroutine == null && !isReloading)
             {
                 gamepad.SetMotorSpeeds(0.5f, 0.5f); // Vibrate controller when shooting
                 shootCoroutine = StartCoroutine(Shoot());
@@ -77,8 +92,8 @@ public class RaycastShoot : MonoBehaviour
     {
         Gamepad gamepad = playerController.GetGamepad(); // Get the gamepad here
 
-        while (true)
-        {
+         while (currentAmmo > 0)
+            {
             Vector3 rayOrigin = fpsCamera.ViewportToWorldPoint(new Vector3(0.5f, 0.5f, 0));
             RaycastHit hit;
 
@@ -136,10 +151,17 @@ public class RaycastShoot : MonoBehaviour
                 gamepad.SetMotorSpeeds(0f, 0f); // Stop vibration for each shot
             }
 
+            currentAmmo--; // Reduce ammo count
+
+            // Auto reload when magazine is empty
+            if (currentAmmo <= 0)
+            {
+                StartCoroutine(Reload());
+            }
+
             yield return new WaitForSeconds(fireRate - 0.05f); // Adjusted delay for the rate of fire
         }
     }
-
 
     IEnumerator AimDownSights()
     {
@@ -155,7 +177,6 @@ public class RaycastShoot : MonoBehaviour
         // After the while loop, force the position to be exactly the adsPosition
         transform.localPosition = adsPositionTransform.localPosition;
     }
-
     IEnumerator StopAimingDownSights()
     {
         isAiming = false;
@@ -167,4 +188,12 @@ public class RaycastShoot : MonoBehaviour
             yield return null;
         }
     }
+    IEnumerator Reload()
+    {
+        isReloading = true;
+        yield return new WaitForSeconds(reloadTime);
+        currentAmmo = maxAmmo; // Reset ammo count to full
+        isReloading = false;
+    }
+
 }
