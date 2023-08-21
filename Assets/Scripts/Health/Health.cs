@@ -9,10 +9,12 @@ public class Health : MonoBehaviour
 
     RagdollScript ragdollScript;
     public bool isHit = false;
+    public HealthBar Healthbar;
 
     private void Start()
     {
         //ragdollScript = GameObject.Find("Character").GetComponent<RagdollScript>();
+        Healthbar.Setup(this, playerController.playerIndex);
     }
 
     public void TakeDamage(float amount)
@@ -21,6 +23,8 @@ public class Health : MonoBehaviour
         currentHealth -= amount; // Update 'health' to 'currentHealth'
         Debug.Log("Current health: " + currentHealth);
         isHit = true;
+        Healthbar.SetHealth(currentHealth);
+
 
         if (currentHealth <= 0f) // Update 'health' to 'currentHealth'
         {
@@ -42,6 +46,7 @@ public class Health : MonoBehaviour
             currentHealth = maxHealth; // Update 'health' to 'currentHealth'
             isHit = false; // Reset the isHit flag after dying.
         }
+
     }
 
     public bool IsDead()
