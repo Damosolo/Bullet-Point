@@ -1,5 +1,4 @@
 using System.Collections;
-using UnityEditor.Build.Content;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -29,6 +28,7 @@ public class RaycastShoot : MonoBehaviour
     private Coroutine shootCoroutine;
     private float originalLookSpeed;
     private int currentAmmo;
+  
     private bool isReloading = false;
 
     private void Start()
@@ -38,8 +38,15 @@ public class RaycastShoot : MonoBehaviour
         currentAmmo = maxAmmo; // Initialize current ammo count
     }
 
+    public void KillDisable()
+    {
+        isReloading = false;
+        StopCoroutine(Reload());
+    }
+
     void Update()
     {
+        
         Gamepad gamepad = playerController.GetGamepad();
 
         if (gamepad == null)
@@ -47,6 +54,12 @@ public class RaycastShoot : MonoBehaviour
             Debug.LogWarning("No gamepad assigned to the player controller.");
             return;
         }
+
+        if(currentAmmo == 0 && !isReloading)
+        {
+            StartCoroutine(Reload());
+        }
+
 
         float rightTriggerValue = gamepad.rightTrigger.ReadValue();
         float leftTriggerValue = gamepad.leftTrigger.ReadValue();

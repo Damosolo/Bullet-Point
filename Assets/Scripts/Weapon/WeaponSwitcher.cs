@@ -34,8 +34,14 @@ public class WeaponSwitcher : MonoBehaviour
         if (gamepad.buttonNorth.wasPressedThisFrame)
         {
             isUsingWeapon1 = !isUsingWeapon1;
+
+           
+            weapon1.GetComponent<RaycastShoot>().KillDisable();
+            weapon2.GetComponent<RaycastShoot>().KillDisable();
+
             weapon1.SetActive(isUsingWeapon1);
             weapon2.SetActive(!isUsingWeapon1);
+ 
         }
 
         // Aim Down Sights (ADS) with left trigger
